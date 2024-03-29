@@ -138,7 +138,7 @@ const a = await ctx.word.driver.start({
 
 每个库都是这样的结构，并且保存在`wordData`数据库内
 
-```
+```json
 {
     "name": "此库的名字",
     "author": ["作者"],
@@ -152,11 +152,163 @@ const a = await ctx.word.driver.start({
 }
 ```
 
-### 这里是一些编辑器相关的api
+## word.editor.addAuthor(name, uid, authorID)
 
-> 但是还在施工x
-> 
-> ![](https://xc.null.red:8043/XCimg/img/save/2024/02/03/572F9676F2F2A0F7009F7EFCBCBDA147-1188360979.jpg#e)
+添加一名新作者到当前某的库中
+
+name：`string` 目标词库名
+
+uid：`string` 你的id
+
+authorID：`string` 被添加人的id
+
+返回值：`Promise<"您不是作者，无权操作" | "添加完成" | "此作者已存在">`
+
+## word.editor.removeAuthor(name, uid, authorID)
+
+从某词库中删除一名作者
+
+name：`string` 目标词库名
+
+uid：`string` 你的id
+
+authorID：`string` 被删除人的id
+
+返回值：`Promise<"您不是作者，无权操作" | "此作者不存在" | "已删除作者">`
+
+## word.editor.getAuthor(name)
+
+获取某个词库的作者组
+
+name：`string` 目标词库名
+
+返回值：`Promise<string[]>` 作者组
+
+## word.editor.isAuthor(name, authorID)
+
+查看某人是否有作者权限
+
+name：`string` 目标词库名
+
+authorID：`string` 被查询者的id
+
+返回值：`Promise<boolean>` 是否拥有
+
+## word.editor.addWordItem(name, uid, q, a)
+
+添加一条机器人问答
+
+name：`string` 目标词库名
+
+uid：`string` 你的id
+
+q：`string` 触发句
+
+a：`string` 回复句
+
+返回值：`Promise<number | "您不是作者，无权操作">`
+
+## word.editor.rmWordItem(name, uid, q, list)
+
+删除一条机器人问答
+
+name：`string` 目标词库名
+
+uid：`string` 你的id
+
+q：`string` 触发句
+
+list：`number | "all"` 需要删除的词条对应的序号
+
+返回值：`Promise<"您不是作者，无权操作" | "此触发词不存在" | "超过触发词的回答上限" | "over">`
+
+## word.editor.getQuestion(q)
+
+查找词条（查询某触发句所在的词库）
+
+q：`string` 触发句
+
+返回值：`Promise<string[]>` 包含此词条的数组
+
+## word.editor.readWord(name)
+
+获取某个词库的存储
+
+返回值：
+
+```json
+{
+    "name": "此库的名字",
+    "author": ["作者"],
+    "data": {
+        "触发句": [
+            "回复句1",
+            "回复句2"
+        ]
+    },
+    "saveDB": "存储格"
+}
+```
+
+## word.editor.readSaveCell(name, uid)
+
+获取某词库的存储格
+
+name：`string` 目标词库名
+
+uid：`string` 你的id
+
+返回结果：`Promise<string>`
+
+## word.editor.setSaveCell(name, cell, uid)
+
+设置某词库的存储格
+
+name：`string` 目标词库名
+
+cell：`string` 新存储格名
+
+uid：`string` 你的id
+
+返回值：`Promise<boolean | "你不是作者" | "无此词库">`
+
+## word.editor.resetSaveCell(name, uid)
+
+重设存储格到默认
+
+name：`string` 目标词库名
+
+uid：`string` 你的id
+
+返回值：`Promise<boolean | "你不是作者" | "无此词库">`
+
+## word.editor.getWordList()
+
+获取当前所拥有的词库列表
+
+返回值：`Promise<string[]>` 词库列表
+
+## word.editor.removeWord(name)
+
+删除词库到回收站
+
+name：`string` 目标词库名
+
+返回值：`Promise<"词库列表不存在此词库" | "ok">`
+
+## word.editor.restoreWord(name)
+
+恢复回收站的词库
+
+name：`string` 目标词库名
+
+返回值：`Promise<"回收站不存在此词库" | "ok">`
+
+## word.editor.getRecycleBinList()
+
+查看回收站存在的词库
+
+返回值：`Promise<string[]>` 存在的词库列表
 
 # word.permission [词库权限相关]
 
@@ -193,10 +345,6 @@ permission：`string` 权限树
 uid: `string` 查询目标uid
 
 返回值：`Promise<string[]>` 所拥有权限列表
-
-## word.permission.getList(uid)
-
-与上条一致
 
 ## word.permission.isHave(uid, permission)
 
@@ -531,3 +679,113 @@ uid：`string` 用户id
 key：`string` 配置的键
 
 value：`string` 配置的值
+
+## word.user.getData(uid)
+
+获取用户背包
+
+uid：`string` 用户id
+
+返回值：`Promise<Record<string, Record<string, number>>>` 背包数据
+
+用户背包内容一般为：
+
+```typescript
+{
+  [存储格名:string]: {
+    [物品名称:string]: 数量:number
+  }
+}
+```
+
+## word.user.getEditWord(uid)
+
+获取用户正在编辑的词库
+
+uid：`string` 用户id
+
+返回值：`Promise<string>` 正在编辑的词库
+
+## word.user.getItem(uid, cell, itemName)
+
+从缓存中读取物品数量，若缓存中不存在物品数量，则先从数据库中读取
+
+uid：`string` 用户id
+
+cell：`string` 存储格
+
+itemName：`string` 物品名称
+
+返回值：`Promise<number | null>` 存在的数量数量或者null
+
+## word.user.setEditWord(uid, newDB)
+
+设置用户正在编辑的库
+
+uid: `string` 用户id
+
+newDB：`string` 需要编辑的库
+
+## word.user.updateItem(uid, cell, itemName, amount)
+
+设置用户某物品的数量到缓存
+
+uid：`string` 用户id
+
+cell：`string` 存储格
+
+itemName：`string` 物品名称
+
+amount：`number` 物品数量
+
+## word.user.updateItemForce(uid, cell, itemName, amount)
+
+直接设置用户物品数量，并且保存到数据库
+
+uid：`string` 用户id
+
+cell：`string` 存储格
+
+itemName：`string` 物品名称
+
+amount：`number` 物品数量
+
+## word.user.updateData(uid, data)
+
+保存用户数据到数据库
+
+uid：`string` 用户id
+
+data：`Record<string, Record<string, number>>`
+
+data的格式必须为：
+
+```typescript
+{
+  [存储格名:string]: {
+    [物品名称:string]: 数量:number
+  }
+}
+```
+
+## word.user.updateTemp(uid, data)
+
+保存用户信息到缓存中
+
+uid：`string` 用户id
+
+data：`Record<string, Record<string, number>>`
+
+data的格式必须为：
+
+```typescript
+{
+  [存储格名:string]: {
+    [物品名称:string]: 数量:number
+  }
+}
+```
+
+## word.user.saveTemp()
+
+保存缓存中的信息到数据库
