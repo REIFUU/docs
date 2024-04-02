@@ -455,7 +455,7 @@ ctx.word.statement.addStatement('test', async (inData, session) => {
 
 ### inData.internal
 
-拥有以下两项：
+拥有以下五项：
 
 ```typescript
 // 更新某物品的数量
@@ -470,11 +470,27 @@ inData.internal.getItem(uid, saveDB, itemName)
 uid: string = 用户id
 saveDB: string = 读取的存储格(可以从inData.wordData.saveDB中得到)
 itemName: string = 物品名称
+
+inData.internal.getUserConfig(uid, key)
+获取用户的配置
+uid: string = 用户id
+key: string = 配置键
+
+inData.internal.saveUserConfig(uid, key, value)
+保存一个用户的配置
+uid: string = 用户id
+key: string = 配置键
+value: settingTypeValue = 配置值
+
+inData.internal.removeUserConfig(uid: string, key: string)
+删除一个用户的配置
+uid: string = 用户id
+key: string = 配置键
 ```
 
 请在获取物品的时候尽量使用这两个接口，而不是`word.user.getItem`和`word.user.updateItem`
 
-`inData.internal.saveItem`和`inData.internal.getItem`两个接口读取和更新用户数据的时候，会先建立个缓存，当所有语法包解析完成后，最终才会保存数据，而`word.user.getItem`和`word.user.updateItem`这两个是立刻读取和立刻保存
+`inData.internal`接口读取和更新用户数据的时候，会先建立个缓存，当所有语法包解析完成后，最终才会保存数据，而`word.user.getItem`和`word.user.updateItem`这些接口是立刻读取和立刻保存
 
 ### inData.parPack
 
