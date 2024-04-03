@@ -234,7 +234,31 @@ q：`string` 触发句
 
 获取某个词库的存储
 
+name：`string` 词库名
+
 返回值：
+
+```json
+{
+    "name": "此库的名字",
+    "author": ["作者"],
+    "data": {
+        "触发句": [
+            "回复句1",
+            "回复句2"
+        ]
+    },
+    "saveDB": "存储格"
+}
+```
+
+## word.editor.updateWord(name, data)
+
+更新/写入词库
+
+name：`string` 词库名
+
+data：
 
 ```json
 {
