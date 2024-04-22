@@ -90,8 +90,10 @@ value: `string | number | string[] | number[] | Record<string, string>` 配置�
 
 ```
 ctx.on("message", session=>{
-  const a = await ctx.word.driver.start(session)
-  return a;
+  const a = await ctx.word.driver.start(session,str=>{
+    if (!str) {return;}
+    session.send(str)
+  })
 })
 ```
 
@@ -102,9 +104,9 @@ ctx.on("message", session=>{
 3. 若此时未发现`输入`的为词库`触发句`，则`return;`
 4. 若在此时发现输入的为词库的`触发句`，则寻找这个`触发句所在的词库`（若多个词库则随机选择一个）
 5. 进入目标词库后，获取这个`触发句`的`回答句列表`
-6. 随机挑选一个`回答句`进行解析，若成功解释则`ctx.word.driver.start` 返回 `解释的结果` ，否则则`return;`
+6. 随机挑选一个`回答句`进行解析，若成功解释则`ctx.word.driver.start` 的第二个参数的回调参数会获取到 `解释的结果` ，否则会收到`null`
 
-## word.driver.start(session)
+## word.driver.start(session, str=>void)
 
 session：`Session | {username:string , userId:string , channelId:string , content:string}` 
 
@@ -122,14 +124,14 @@ session.content     // 用户说的话
 我们也可以使用
 
 ```javascript
-const a = await ctx.word.driver.start({
+ctx.word.driver.start({
   username: '你的名字',
   userId: '你的id',
   channelId: '你所在的频道',
   content: '你好'
-})
+},str=>{ console.log(str) })
 
-// 此时a为"你也好"
+// 此时str为"你也好"
 ```
 
 # word.editor [词库编辑器相关]
@@ -438,7 +440,7 @@ callback返回值: `string | void`
 callbacl的`返回值`会替换掉`回复句`中正在解析中的`语法`
 
 ```typescript
-// 此处的session是word.driver.start(session)的session
+// 此处的session是word.driver.start(session,ctx=>void)的session
 
 // inData比较复杂，这个是一些方法和数据的封装，包含以下内容
 inData.args
@@ -556,7 +558,7 @@ statementName：`string` 语法名
 // 定义一个名为at的输入替换
 ctx.word.trigger.addTrigger('at', '(@)', '\\s\*<at name=\\"([\\s\\S]+)\\"\\/>\\s\*');
 
-// 在word.driver.start(session)中，输入替换检测器会在
+// 在word.driver.start(session,str=>void)中，输入替换检测器会在
 // session.content能够匹配到Reg('\\s\*<at name=\\"([\\s\\S]+)\\"\\/>\\s\*')时，将匹配的内容转换为(@)
 // 这一步被称为输入替换
 
