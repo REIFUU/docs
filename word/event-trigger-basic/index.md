@@ -1,4 +1,4 @@
-# event-trigger-basic
+# koishi-plugin-word-core-event-trigger-basic
 
 此插件为词库插件的附属扩展之一，其作用是为词库添加一个计划任务，可以每当计划任务的时间时，在设置计划任务的`频道`内触发某个`触发句`
 
