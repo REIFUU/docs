@@ -55,7 +55,7 @@
 
 触发句：词库触发句
 
-计划任务格式：`corn格式`  [定时任务时间格式](https://www.jianshu.com/p/02ae7bc3fc43)
+计划任务格式：`corn格式`
 
 ## word.listtimer
 
